@@ -1,0 +1,224 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="EchoPort.lua"/>
+	<Frame name="EchoPort" parent="UIParent" movable="true" hidden="true">
+		<Size>
+			<AbsDimension x="100" y="100"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				EchoPort_OnLoad(self)
+			</OnLoad>
+			<OnDragStart>
+				self:StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing()
+			</OnDragStop>
+			<OnEvent>
+				EchoPort_OnEvent(self, event, ...)
+			</OnEvent>
+			<OnUpdate>
+				EchoPort_OnUpdate(self, elapsed)
+			</OnUpdate>
+		</Scripts>
+		<Frames>
+			<Frame name="$parent_DirectionArrow">
+				<Size>
+					<AbsDimension x="53" y="70"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentImage" file="Interface\AddOns\EchoPort\arrow_image" hidden="true">
+							<Size>
+								<AbsDimension x="53" y="70"/>
+							</Size>
+						</Texture>
+						<Texture name="EchoPort_NoPortImage" file="Interface\AddOns\EchoPort\NoPort">
+							<Size>
+								<AbsDimension x="64" y="64"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0" b="0" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parent_FacingArrow">
+				<Size>
+					<AbsDimension x="53" y="70"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_DirectionArrow" relativePoint="RIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentImage" file="Interface\AddOns\EchoPort\arrow_image" setAllPoints="true" hidden="true">
+							<Size>
+								<AbsDimension x="53" y="70"/>
+							</Size>
+							<Color r="0.5" g="0.5" b="0.5" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parent_FadeFrame">
+				<Size>
+					<AbsDimension x="300" y="50"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="UIParent"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="EchoPort_EnabledText" text="EchoPort enabled!" inherits="GameFontNormalHuge">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0" g="1" b="0" a="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parent_DistanceText" inherits="GameFontNormal" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent_DirectionArrowImage" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_DurationText" inherits="GameFontNormal" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent_DistanceText" relativePoint="BOTTOM"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="EchoPort_Options">
+		<!--<Frames>
+			<CheckButton name="$parentShowTimerCheck" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						EchoPortSVar.showTimer = self:GetChecked()
+						EchoPort:ReloadFrame()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowDirectionArrowCheck" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentShowTimerCheck" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						EchoPortSVar.showDirArrow = self:GetChecked()
+						EchoPort:ReloadFrame()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowFacingArrowCheck" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentShowDirectionArrowCheck" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						EchoPortSVar.showFacingArrow = self:GetChecked()
+						EchoPort:ReloadFrame()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentGhostModeCheck" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentShowFacingArrowCheck" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						EchoPortSVar.ghostMode = self:GetChecked()
+						EchoPort:ReloadFrame()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Slider name="$parentDirectionArrowScale" minValue="0.5" maxValue="1.5" valueStep="0.1" inherits="OptionsSliderTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentShowTimerCheck" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="175" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						EchoPortSVar.dirArrowScale = self:GetValue()
+						EchoPort_OptionsDirectionArrowScaleNum:SetText(string.format("%1.1f", EchoPortSVar.dirArrowScale))
+						EchoPort:ReloadFrame()
+					</OnValueChanged>
+				</Scripts>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentNum" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Slider>
+			<Slider name="$parentFacingArrowScale" minValue="0.5" maxValue="1.5" valueStep="0.1" inherits="OptionsSliderTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="EchoPort_OptionsDirectionArrowScale" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						EchoPortSVar.facingArrowScale = self:GetValue()
+						EchoPort_OptionsFacingArrowScaleNum:SetText(string.format("%1.1f", EchoPortSVar.facingArrowScale))
+						EchoPort:ReloadFrame()
+					</OnValueChanged>
+				</Scripts>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentNum" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Slider>
+		</Frames>-->
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="EchoPort" inherits="GameFontNormalLarge">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="15" y="-15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

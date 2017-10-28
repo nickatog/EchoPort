@@ -1,0 +1,8 @@
+## Interface: 40100
+## Title: EchoPort
+## Version: 2.0.2
+## Author: Kjado (kj@arcanistry.net)
+## Notes: Where did I put my Demonic Circle...
+## SavedVariables: EchoPortSVar
+
+EchoPort.xml

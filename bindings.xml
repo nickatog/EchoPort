@@ -1,0 +1,9 @@
+<Bindings>
+	<Binding name="Start/Stop EchoPort" header="EchoPortHeader">
+		if EchoPort:IsVisible() then
+			EchoPort:Enable(false)
+		else
+			EchoPort:Enable(true)
+		end
+	</Binding>
+</Bindings>
